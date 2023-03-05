@@ -10,7 +10,7 @@ require "test_vk_head.php" ; 	// шапка страницы
     // Инициализация
     $gr=[];
     $gr[]= array ( 0,0,0,0,0,0,0,0,0,0,0 );
-    $gr[]= array ( 0,1,1,1,1,0,1,1,1,1,0 );
+    $gr[]= array ( 0,1,1,1,1,1,1,1,1,1,0 );
     $gr[]= array ( 0,1,0,0,0,0,1,0,0,1,0 );
     $gr[]= array ( 0,1,1,0,1,1,1,0,0,1,0 );
     $gr[]= array ( 0,1,0,1,1,0,0,1,0,1,0 );
@@ -23,10 +23,11 @@ require "test_vk_head.php" ; 	// шапка страницы
 
      
 	class Grid{
-		protected $grid;	// лабиринт
-		protected $start;	// точка старта
-		protected $finish;	// точка финиша
-		protected $way;	// путь
+		protected $grid;		// лабиринт
+		protected $start;		// точка старта
+		protected $finish;		// точка финиша
+		protected $way;			// путь 
+		protected $way_length;	// длинна пути
 		
 	
 //		инициализация лабиринта
@@ -62,19 +63,6 @@ require "test_vk_head.php" ; 	// шапка страницы
 				echo '<br>';
 			}
 		}
-
-//		сосед - ты стена или кто?
-		public function whoI( $x,$y ){
-			if( $this->grid[$x][$y] === 'F' ) {
-				return 'F';  // это точка финиша  
-			} elseif ( $this->grid[$x][$y] === 'S' ) {
-				return 'S';  // это точка старта  
-			} elseif ( $this->grid[$x][$y] === 0 ) {
-				return 0 ;  //  это стена
-			} else {
-				return $this->grid[$x][$y] ;  //  это НЕ стена
-			}
-		}	
 
 //		считаем соседей
 		public function iCount( $x,$y ){
@@ -112,16 +100,41 @@ require "test_vk_head.php" ; 	// шапка страницы
 		}
 
 
-		public function findWay (  ){
+		public function whoIs( $is ){
+			if( ( $is > 0 && $is < 5 ) || ( $is === 'F' ) ){
+				return true;
+			}	
+		}
+		
+		public function findWay(){
 			$i = 0 ; 	// счетчик выходов/не стены/
-/*			do {
-				
-			} while ();
-*/			if( $this->grid[$x-1][$y] !== 0 ){ $i++; }
-			if( $this->grid[$x+1][$y] !== 0 ){ $i++; }
-			if( $this->grid[$x][$y-1] !== 0 ){ $i++; }
-			if( $this->grid[$x][$y+1] !== 0 ){ $i++; }
-			// echo "$x * $y = $i ; <br>";
+			$way = [];
+			$point = $this->start;
+			echo "<br> findWay()";
+			#var_export( $point );
+			$x = $point['x'];
+			$y = $point['y'];
+			do {
+				$i++;
+				if(     $this->whoIs( $this->grid[$x-1][$y] )){ $x--;  }
+				elseif( $this->whoIs( $this->grid[$x+1][$y] )){ $x++;  }
+				elseif( $this->whoIs( $this->grid[$x][$y-1] )){ $y--;  }
+				elseif( $this->whoIs( $this->grid[$x][$y+1] )){ $y++;  }
+
+				echo "<br> [ {$this->grid[$x][$y]} ] $x : $y = $i ; ";
+				if( $this->grid[$x][$y] === 'F'  ){
+					echo '<h3>Finish!</h3>';
+					break;
+				} elseif ( $this->grid[$x][$y] > 2  ){
+					$this->grid[$x][$y] = 7 ;
+				} else {
+					$this->grid[$x][$y] = 5 ;
+				};
+				$way[] = [$x][$y];
+			} while ( $i < 50 || $this->grid[$x][$y] === 'F' );
+			$this->way = $way;
+			$this->way_length = count( $way );
+			echo "<br>";
 			return $i;
 		}
 
@@ -138,7 +151,11 @@ require "test_vk_head.php" ; 	// шапка страницы
 		echo " - ".$n;
 	} while ( $n > 0 );
 	$grid->outGrid();
+	$grid->findWay();
+	$grid->outGrid();
+
 	
+    echo "<br>";
     echo "<br>\n";
 	
 require "test_vk_end.php" ; 	// низ страницы
