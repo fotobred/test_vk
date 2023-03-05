@@ -11,14 +11,14 @@ require "test_vk_head.php" ; 	// шапка страницы
     $gr=[];
     $gr[]= array ( 0,0,0,0,0,0,0,0,0,0,0 );
     $gr[]= array ( 0,1,1,1,1,1,1,1,1,1,0 );
-    $gr[]= array ( 0,1,0,0,0,0,1,0,0,1,0 );
-    $gr[]= array ( 0,1,1,0,1,1,1,0,0,1,0 );
+    $gr[]= array ( 0,1,0,0,0,0,0,0,0,1,0 );
+    $gr[]= array ( 0,1,1,1,1,1,1,1,0,1,0 );
+    $gr[]= array ( 0,1,0,0,1,0,0,1,0,1,0 );
     $gr[]= array ( 0,1,0,1,1,0,0,1,0,1,0 );
-    $gr[]= array ( 0,1,0,1,0,0,0,1,0,1,0 );
     $gr[]= array ( 0,1,0,1,0,1,0,1,1,1,0 );
-    $gr[]= array ( 0,1,0,1,1,1,0,1,0,0,0 );
-    $gr[]= array ( 0,1,0,0,0,1,0,1,0,1,0 );
-    $gr[]= array ( 0,1,1,1,1,1,0,1,1,1,0 );
+    $gr[]= array ( 0,1,0,1,1,1,1,1,0,0,0 );
+    $gr[]= array ( 0,1,0,0,0,1,0,0,0,1,0 );
+    $gr[]= array ( 0,1,0,1,1,1,1,1,1,1,0 );
     $gr[]= array ( 0,0,0,0,0,0,0,0,0,0,0 );
 
      
@@ -116,10 +116,10 @@ require "test_vk_head.php" ; 	// шапка страницы
 			$y = $point['y'];
 			do {
 				$i++;
-				if(     $this->whoIs( $this->grid[$x-1][$y] )){ $x--;  }
-				elseif( $this->whoIs( $this->grid[$x+1][$y] )){ $x++;  }
-				elseif( $this->whoIs( $this->grid[$x][$y-1] )){ $y--;  }
-				elseif( $this->whoIs( $this->grid[$x][$y+1] )){ $y++;  }
+				if(     $this->whoIs( $this->grid[$x-1][$y] ) ){ $x--; }
+				elseif( $this->whoIs( $this->grid[$x+1][$y] ) ){ $x++; }
+				elseif( $this->whoIs( $this->grid[$x][$y-1] ) ){ $y--; }
+				elseif( $this->whoIs( $this->grid[$x][$y+1] ) ){ $y++; }
 
 				echo "<br> [ {$this->grid[$x][$y]} ] $x : $y = $i ; ";
 				if( $this->grid[$x][$y] === 'F'  ){
@@ -130,6 +130,7 @@ require "test_vk_head.php" ; 	// шапка страницы
 				} else {
 					$this->grid[$x][$y] = 5 ;
 				};
+				echo " [ {$this->grid[$x][$y]} ] ";
 				$way[] = [$x][$y];
 			} while ( $i < 50 || $this->grid[$x][$y] === 'F' );
 			$this->way = $way;
@@ -141,18 +142,21 @@ require "test_vk_head.php" ; 	// шапка страницы
 	}	// class Grid
 
 	$grid = new Grid;
-	$grid->setGrid( $gr );
-	$grid->setStart( 1,1 );
-	$grid->setFinish( 9,9 );
-	$grid->outGrid();
+	$grid->setGrid( $gr );		// получаю "лабиринт"
+	$grid->setStart( 1,1 );		// задаю точку старта
+	$grid->setFinish( 9,9 );	// задаю точку финиша
+	$grid->outGrid();			// вывожу исходный вариант 
 	echo "<br> закрываю тупики: ";
+//	это, конечно, не честное решение задачи 
+//	- надо обходить все поля с точки старта
+//	а не закрывать тупиковые пути изначально...
 	do { 
 		$n = $grid->sitoGrid();
 		echo " - ".$n;
 	} while ( $n > 0 );
-	$grid->outGrid();
-	$grid->findWay();
-	$grid->outGrid();
+	$grid->outGrid();			// вывожу вариант 
+	$grid->findWay();			// прошел одним путем
+	$grid->outGrid();			// вывожу  вариант 
 
 	
     echo "<br>";
